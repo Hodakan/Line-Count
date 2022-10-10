@@ -11,7 +11,7 @@ class Application(Frame):
         super().__init__(master)
         self.Setting = Setting()
         self.counter = {}
-        for s in self.Setting.FILETYPE.keys():
+        for s in self.Setting.TARGETLANG:
             self.counter[s] = 0
 
         self.master = master
@@ -32,7 +32,7 @@ class Application(Frame):
         self.table.column('Lines', width=50, anchor=CENTER)
         self.table.insert("", END, values=(
             '----------------------------', '----------------------------'))
-        for lang in self.Setting.FILETYPE.keys():
+        for lang in self.Setting.TARGETLANG:
             self.table.insert("", END, values=(lang, 0))
         self.table.insert("", END, values=(
             '----------------------------', '----------------------------'))
@@ -124,13 +124,18 @@ class Application(Frame):
     def updateRes(self) -> None:
         i = 2
         sum = 0
-        for lang in self.Setting.FILETYPE.keys():
+        for lang in self.Setting.TARGETLANG:
             self.table.set("I00"+str(i), column="Lines",
                            value=self.counter[lang])
             sum += self.counter[lang]
             i += 1
         self.table.set("I009", column="Lines", value=sum)
         self.filePath = None
+
+    def updateSettings(self) -> None:
+        self.counter.clear()
+        for lang in self.Setting.TARGETLANG:
+            self.counter[lang] = 0
 
 
 if __name__ == '__main__':
