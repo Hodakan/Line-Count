@@ -1,21 +1,19 @@
-from tkinter import Frame, Tk, filedialog
-from tkinter import CENTER, END, X, N, W
+from tkinter import NW, Frame, Tk, filedialog
+from tkinter import CENTER, END, X, N, W, NW
 from tkinter import ttk
+from Setting import Setting
 from os import listdir, path
-
-SUFFIX = {"c": "C/C++", "cpp": "C/C++", "java": "Java", "py": "Python", "js": "Type/JavaScript",
-          "ts": "Type/JavaScript", "asm": "Assembly", "html": "Html/CSS", "h": "C/C++", "css": "Html/CSS"}
-FILETYPE = {"C/C++": ['c', 'cpp', 'h'], "Java": ['java'], "Python": ['py'],
-            "Type/JavaScript": ['js', 'ts'], "Html/CSS": ['html', 'css'], "Assembly": ['asm']}
 
 
 class Application(Frame):
 
     def __init__(self, master=None):
         super().__init__(master)
+        self.Setting = Setting()
         self.counter = {}
-        for s in FILETYPE.keys():
+        for s in self.Setting.FILETYPE.keys():
             self.counter[s] = 0
+
         self.master = master
         self.pack()
         self.filePath = None
@@ -34,7 +32,7 @@ class Application(Frame):
         self.table.column('Lines', width=50, anchor=CENTER)
         self.table.insert("", END, values=(
             '----------------------------', '----------------------------'))
-        for lang in FILETYPE.keys():
+        for lang in self.Setting.FILETYPE.keys():
             self.table.insert("", END, values=(lang, 0))
         self.table.insert("", END, values=(
             '----------------------------', '----------------------------'))
@@ -65,6 +63,15 @@ class Application(Frame):
 
         self.frame02.pack(pady=6)
 
+        self.frame03 = ttk.Frame(self.master)
+        self.btnSet = ttk.Button(
+            self.frame03, text="Settings", command=self.settings, width=7)
+        self.btnSet.pack(side='left', anchor=N)
+        self.frame03.pack(side='bottom', fill=X)
+
+    def settings(self):
+        self.Setting.creatWindow()
+
     def reset(self) -> None:
         for k in self.counter.keys():
             self.counter[k] = 0
@@ -91,15 +98,15 @@ class Application(Frame):
                 continue
 
             file_suffix = file.split(".")[-1]
-            if file_suffix in SUFFIX.keys():
-                self.search(filePath)
+            if file_suffix in self.Setting.SUFFIX.keys():
+                self.count(filePath)
 
         return None
 
-    def search(self, filePath: str) -> None:
+    def count(self, filePath: str) -> None:
         fileName = path.basename(filePath)
         file_suffix = fileName.split(".")[-1]
-        file_type = SUFFIX[file_suffix]
+        file_type = self.Setting.SUFFIX[file_suffix]
 
         try:
             fp = open(filePath, 'r', encoding='gbk')
@@ -117,12 +124,13 @@ class Application(Frame):
     def updateRes(self) -> None:
         i = 2
         sum = 0
-        for lang in FILETYPE.keys():
+        for lang in self.Setting.FILETYPE.keys():
             self.table.set("I00"+str(i), column="Lines",
                            value=self.counter[lang])
             sum += self.counter[lang]
             i += 1
         self.table.set("I009", column="Lines", value=sum)
+        self.filePath = None
 
 
 if __name__ == '__main__':
