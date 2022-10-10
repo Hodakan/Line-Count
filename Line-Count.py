@@ -70,7 +70,7 @@ class Application(Frame):
         self.frame03.pack(side='bottom', fill=X)
 
     def settings(self):
-        self.Setting.creatWindow()
+        self.Setting.creatWindow(self)
 
     def reset(self) -> None:
         for k in self.counter.keys():
@@ -136,6 +136,17 @@ class Application(Frame):
         self.counter.clear()
         for lang in self.Setting.TARGETLANG:
             self.counter[lang] = 0
+        i = 2
+        for lang in self.Setting.TARGETLANG:
+            self.table.set("I00"+str(i), column="Language", value=lang)
+            self.table.set("I00"+str(i), column="Lines",
+                           value=self.counter[lang])
+            i += 1
+        if i < 8:
+            for x in range(i, 8):
+                self.table.set("I00"+str(x), column="Language", value="")
+                self.table.set("I00"+str(x), column="Lines", value="")
+        self.table.set("I009", column="Lines", value=0)
 
 
 if __name__ == '__main__':

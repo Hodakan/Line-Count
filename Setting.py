@@ -11,36 +11,34 @@ class Setting:
         self.ALLLang = {"C/C++": ['c', 'cpp', 'h'], "Java": ['java'], "Python": ['py'], "Type/JavaScript": [
             'js', 'ts'], "Html/CSS": ['html', 'css'], "Assembly": ['asm'], "C#": ['cs'], "Julia": ['jl'], "PHP": ['php'], "Golang": ['go']}
 
-    def creatWindow(self):
+    def creatWindow(self, app):
+        self.app = app
+
         self.Root = Tk()
         self.Root.geometry('200x300+450+250')
         self.Root.title("Settings")
 
         self.var_C = IntVar(self.Root)
-        self.var_C.set(1)
         self.var_Java = IntVar(self.Root)
-        self.var_Java.set(1)
         self.var_Python = IntVar(self.Root)
-        self.var_Python.set(1)
         self.var_Html = IntVar(self.Root)
-        self.var_Html.set(1)
         self.var_JS = IntVar(self.Root)
-        self.var_JS.set(1)
         self.var_Asm = IntVar(self.Root)
-        self.var_Asm.set(1)
         self.var_Julia = IntVar(self.Root)
-        self.var_Julia.set(0)
         self.var_CS = IntVar(self.Root)
-        self.var_CS.set(0)
         self.var_PHP = IntVar(self.Root)
-        self.var_PHP.set(0)
         self.var_Go = IntVar(self.Root)
-        self.var_Go.set(0)
 
         self.var_List = [self.var_C, self.var_Java, self.var_Python, self.var_JS,
                          self.var_Html, self.var_Asm, self.var_Julia, self.var_CS, self.var_PHP, self.var_Go]
         self.lang_List = ['C/C++', 'Java', 'Python', 'Type/JavaScript',
                           'Html/CSS', 'Assembly', 'Julia', 'C#', 'PHP', 'Golang']
+
+        for i, l in enumerate(self.lang_List):
+            if l in self.TARGETLANG:
+                self.var_List[i].set(1)
+            else:
+                self.var_List[i].set(0)
 
         self.creatWidget()
         self.Root.mainloop()
@@ -80,12 +78,20 @@ class Setting:
 
     def updateTargetLang(self):
         ct = 0
-        for var in self.var_List:
+        lang = []
+        for i, var in enumerate(self.var_List):
             if var.get() == 1:
                 ct += 1
+                lang.append(self.lang_List[i])
         if ct > 6:
             messagebox.showinfo("Warning", "No more than 6 languages")
-            self.resetTargetLang()
+        else:
+            self.TARGETLANG = lang
+            self.SUFFIX = {}
+            for l in lang:
+                for suf in self.ALLLang[l]:
+                    self.SUFFIX[suf] = l
+            self.app.updateSettings()
 
     def resetTargetLang(self):
         for i in range(6):
